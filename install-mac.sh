@@ -145,19 +145,19 @@ fi
 
 info "Mounted at $MOUNT_POINT"
 
-# Check if app is running
-if pgrep -f "$APP_NAME" > /dev/null 2>&1; then
+# Check if app is running (use -x for exact process name match)
+if pgrep -x "$APP_NAME" > /dev/null 2>&1; then
     if [ "$FORCE_MODE" = true ]; then
         info "Force mode: Closing Terminal IDE..."
-        pkill -f "$APP_NAME" 2>/dev/null || true
+        pkill -x "$APP_NAME" 2>/dev/null || true
         sleep 2
     else
         warn "Terminal IDE is currently running."
-        read -p "Close it and continue? (y/N) " -n 1 -r
+        read -p "Close it and continue? (y/N) " -n 1 -r </dev/tty
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             info "Closing Terminal IDE..."
-            pkill -f "$APP_NAME" 2>/dev/null || true
+            pkill -x "$APP_NAME" 2>/dev/null || true
             sleep 2
         else
             error "Please close Terminal IDE and try again."
