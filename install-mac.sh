@@ -76,11 +76,11 @@ info "Installing Terminal IDE $VERSION for $ARCH_SUFFIX..."
 
 # DMG filename pattern (uses dots, not spaces):
 # - ARM64: Terminal.IDE-{version}-arm64.dmg
-# - x64: Terminal.IDE-{version}.dmg (no suffix)
+# - x64: Terminal.IDE-{version}-x64.dmg
 if [ "$ARCH_SUFFIX" = "arm64" ]; then
     DMG_NAME="Terminal.IDE-${VERSION_NUM}-arm64.dmg"
 else
-    DMG_NAME="Terminal.IDE-${VERSION_NUM}.dmg"
+    DMG_NAME="Terminal.IDE-${VERSION_NUM}-x64.dmg"
 fi
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME"
 
