@@ -74,18 +74,15 @@ VERSION_NUM="${VERSION#v}"
 
 info "Installing Terminal IDE $VERSION for $ARCH_SUFFIX..."
 
-# DMG filename pattern:
-# - ARM64: Terminal IDE-{version}-arm64.dmg
-# - x64: Terminal IDE-{version}.dmg (no suffix)
+# DMG filename pattern (uses dots, not spaces):
+# - ARM64: Terminal.IDE-{version}-arm64.dmg
+# - x64: Terminal.IDE-{version}.dmg (no suffix)
 if [ "$ARCH_SUFFIX" = "arm64" ]; then
-    DMG_NAME="Terminal IDE-${VERSION_NUM}-arm64.dmg"
+    DMG_NAME="Terminal.IDE-${VERSION_NUM}-arm64.dmg"
 else
-    DMG_NAME="Terminal IDE-${VERSION_NUM}.dmg"
+    DMG_NAME="Terminal.IDE-${VERSION_NUM}.dmg"
 fi
-
-# URL-encode the filename (spaces -> %20)
-DMG_NAME_ENCODED="${DMG_NAME// /%20}"
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME_ENCODED"
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME"
 
 # Create temp directory
 TEMP_DIR=$(mktemp -d)
