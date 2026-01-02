@@ -87,11 +87,14 @@ DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME"
 # Create temp directory
 TEMP_DIR=$(mktemp -d)
 DMG_PATH="$TEMP_DIR/$DMG_NAME"
+MOUNT_POINT=""
 
 cleanup() {
     info "Cleaning up..."
-    # Unmount if still mounted
-    if [ -d "/Volumes/$APP_NAME" ]; then
+    # Unmount if still mounted (try both the detected mount point and fallback)
+    if [ -n "$MOUNT_POINT" ] && [ -d "$MOUNT_POINT" ]; then
+        hdiutil detach "$MOUNT_POINT" -quiet 2>/dev/null || true
+    elif [ -d "/Volumes/$APP_NAME" ]; then
         hdiutil detach "/Volumes/$APP_NAME" -quiet 2>/dev/null || true
     fi
     rm -rf "$TEMP_DIR"
@@ -116,13 +119,27 @@ info "Downloaded $DMG_SIZE"
 
 # Mount DMG
 info "Mounting DMG..."
-MOUNT_POINT=$(hdiutil attach "$DMG_PATH" -nobrowse -quiet | grep "/Volumes" | awk '{print $3}')
+MOUNT_OUTPUT=$(hdiutil attach "$DMG_PATH" -nobrowse 2>&1)
+if [ $? -ne 0 ]; then
+    echo "$MOUNT_OUTPUT"
+    error "Failed to attach DMG"
+fi
+
+# Parse mount point from output (last column of line containing /Volumes)
+MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep "/Volumes" | sed 's/.*\(\/Volumes\/.*\)/\1/' | head -1)
 if [ -z "$MOUNT_POINT" ]; then
-    # Try alternate parsing
+    # Fallback: look for the volume directly
     MOUNT_POINT="/Volumes/$APP_NAME"
 fi
 
+# Wait a moment for mount to complete
+sleep 1
+
 if [ ! -d "$MOUNT_POINT" ]; then
+    # Try to find any recently mounted volume
+    warn "Expected mount point not found: $MOUNT_POINT"
+    warn "Available volumes:"
+    ls -la /Volumes/
     error "Failed to mount DMG"
 fi
 
