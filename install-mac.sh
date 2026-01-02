@@ -82,7 +82,10 @@ if [ "$ARCH_SUFFIX" = "arm64" ]; then
 else
     DMG_NAME="Terminal IDE-${VERSION_NUM}.dmg"
 fi
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME"
+
+# URL-encode the filename (spaces -> %20)
+DMG_NAME_ENCODED="${DMG_NAME// /%20}"
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$DMG_NAME_ENCODED"
 
 # Create temp directory
 TEMP_DIR=$(mktemp -d)
