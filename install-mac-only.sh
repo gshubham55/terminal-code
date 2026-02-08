@@ -178,7 +178,7 @@ hdiutil detach "$MOUNT_POINT" -quiet
 
 # Remove quarantine and ad-hoc sign (fixes dyld cache issue for embedded binaries)
 info "Removing quarantine attribute..."
-xattr -cr "$INSTALL_DIR/$APP_NAME.app"
+xattr -cr "$INSTALL_DIR/$APP_NAME.app" 2>/dev/null || true
 
 # Sign resource binaries individually first (--deep doesn't reach extraResources)
 info "Ad-hoc signing embedded binaries..."
