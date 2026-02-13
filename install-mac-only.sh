@@ -4,20 +4,25 @@
 # Downloads and installs Terminal Mac IDE from GitHub releases
 #
 # Usage:
-#   ./install-mac.sh              # Install latest version
-#   ./install-mac.sh v1.0.0       # Install specific version
+#   ./install-mac.sh              # Install latest stable version
+#   ./install-mac.sh --beta       # Install beta version
 #   ./install-mac.sh --force      # Force install (no prompts, kills running app)
-#   ./install-mac.sh v1.0.0 -f    # Specific version, force mode
+#   ./install-mac.sh --beta -f    # Beta version, force mode
 #
 # Or run directly:
 #   curl -fsSL https://raw.githubusercontent.com/gshubham55/terminal-code/main/install-mac.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/gshubham55/terminal-code/main/install-mac.sh | bash -s v1.0.0
+#   curl -fsSL https://raw.githubusercontent.com/gshubham55/terminal-code/main/install-mac.sh | bash -s -- --beta
 #
 
 set -e
 
 REPO="gshubham55/terminal-code"
 FORCE_MODE=false
+BETA_MODE=false
+
+# Hardcoded versions
+STABLE_VERSION="v1.0.19"
+BETA_VERSION="v1.0.19"
 
 # Parse arguments
 for arg in "$@"; do
@@ -25,8 +30,12 @@ for arg in "$@"; do
         -f|--force)
             FORCE_MODE=true
             ;;
+        --beta)
+            BETA_MODE=true
+            ;;
     esac
 done
+
 APP_NAME="Terminal Mac IDE"
 INSTALL_DIR="/Applications"
 
@@ -52,29 +61,13 @@ else
     error "Unsupported architecture: $ARCH"
 fi
 
-# Get version (from argument or latest) - skip flags
-VERSION=""
-for arg in "$@"; do
-    case $arg in
-        -f|--force) ;;  # Skip flags
-        *) VERSION="$arg"; break ;;
-    esac
-done
-
-if [ -z "$VERSION" ]; then
-    info "Fetching latest release..."
-    # Look for Terminal Mac IDE releases (tagged with manual-ide- prefix or manual-v prefix)
-    VERSION=$(curl -fsSL "https://api.github.com/repos/$REPO/releases" | \
-        grep '"tag_name"' | grep -i "manual" | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
-
-    # Fallback: try latest release
-    if [ -z "$VERSION" ]; then
-        VERSION=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-    fi
-
-    if [ -z "$VERSION" ]; then
-        error "Could not determine latest version. Please specify a version: ./install-mac.sh v1.0.0"
-    fi
+# Select version based on channel
+if [ "$BETA_MODE" = true ]; then
+    VERSION="$BETA_VERSION"
+    info "Using beta channel"
+else
+    VERSION="$STABLE_VERSION"
+    info "Using stable channel"
 fi
 
 # Remove 'v' prefix if present for filename matching
@@ -193,10 +186,15 @@ info "Ad-hoc signing app..."
 codesign --force --deep --sign - "$INSTALL_DIR/$APP_NAME.app"
 
 # Verify installation
+CHANNEL="stable"
+if [ "$BETA_MODE" = true ]; then
+    CHANNEL="beta"
+fi
+
 if [ -d "$INSTALL_DIR/$APP_NAME.app" ]; then
     echo ""
     echo -e "${GREEN}============================================${NC}"
-    echo -e "${GREEN}  Terminal Mac IDE $VERSION installed successfully!${NC}"
+    echo -e "${GREEN}  Terminal Mac IDE $VERSION ($CHANNEL) installed successfully!${NC}"
     echo -e "${GREEN}============================================${NC}"
     echo ""
     echo "To launch: open '$INSTALL_DIR/$APP_NAME.app'"
