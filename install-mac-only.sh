@@ -21,7 +21,7 @@ FORCE_MODE=false
 BETA_MODE=false
 
 # Hardcoded versions
-STABLE_VERSION="v1.0.19"
+STABLE_VERSION="v1.0.22-beta"
 BETA_VERSION="v1.0.22-beta"
 
 # Parse arguments
