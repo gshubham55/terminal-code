@@ -21,8 +21,8 @@ FORCE_MODE=false
 BETA_MODE=false
 
 # Hardcoded versions
-STABLE_VERSION="v1.0.24-beta"
-BETA_VERSION="v1.0.25-beta"
+STABLE_VERSION="v1.0.25-beta"
+BETA_VERSION="v1.0.26-beta"
 
 # Parse arguments
 for arg in "$@"; do
