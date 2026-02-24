@@ -22,7 +22,7 @@ BETA_MODE=false
 
 # Hardcoded versions
 STABLE_VERSION="v1.0.25-beta"
-BETA_VERSION="v1.0.26-beta"
+BETA_VERSION="v1.0.27-beta"
 
 # Parse arguments
 for arg in "$@"; do
